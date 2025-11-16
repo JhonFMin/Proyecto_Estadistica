@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+body { font-family: 'Inter', sans-serif; }
+
+.transition-all { transition: all 0.3s ease; }
+
+/* --- SCROLLBAR PERSONALIZADO (Diseño Moderno) --- */
+.custom-scroll::-webkit-scrollbar { 
+    height: 6px; 
+    width: 6px; 
+}
+.custom-scroll::-webkit-scrollbar-thumb { 
+    background-color: #cbd5e1; 
+    border-radius: 4px; 
+}
+.dark .custom-scroll::-webkit-scrollbar-thumb { 
+    background-color: #4b5563; /* Más oscuro en modo noche */
+}
+.custom-scroll::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+/* --- ANIMACIONES --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* --- VARIABLES DE CHART.JS PARA MODO OSCURO --- */
+:root {
+    /* MODO CLARO */
+    --chart-text-color: #374151;
+    --chart-grid-color: rgba(0, 0, 0, 0.1);
+    --chart-tooltip-bg: #ffffff; 
+    --chart-tooltip-border: rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+    /* MODO OSCURO */
+    --chart-text-color: #d1d5db;
+    --chart-grid-color: rgba(255, 255, 255, 0.1);
+    --chart-tooltip-bg: #1f2937;
+    --chart-tooltip-border: rgba(255, 255, 255, 0.1);
+}
