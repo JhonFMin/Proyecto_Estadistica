@@ -5,13 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estadística Descriptiva - Uniguajira</title>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estadística Descriptiva - Uniguajira</title>
-
-    <link rel="icon" type="image/png" href="assets/imag/ICO.png">
-
+<link rel="icon" type="image/png" href="assets/imag/ICO.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -19,48 +13,29 @@
         }
     </script>
 
-    </head>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { darkMode: 'class' } // Habilita modo oscuro manual
-    </script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="css/style.css">
-
-    <style>
-        /* Oculta videos y efectos blur cuando la clase .low-perf está activa */
-        html.low-perf video,
-        html.low-perf .backdrop-blur-\[2px\],
-        html.low-perf .backdrop-blur-\[3px\],
-        html.low-perf .backdrop-blur-md {
-            display: none !important;
-        }
-        /* Restaura colores sólidos planos */
-        html.low-perf main { background-color: #f1f5f9; }
-        html.low-perf.dark main { background-color: #0f172a; }
-        html.low-perf aside { background-color: #ffffff; }
-        html.low-perf.dark aside { background-color: #1e293b; }
-        /* Estilo para botón activo */
-        .btn-perf-active { color: #ea580c !important; background-color: #ffedd5 !important; }
-    </style>
+    
 </head>
 
-<body class="bg-slate-100 text-slate-800 h-screen flex overflow-hidden dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
-    
-    <aside class="w-full md:w-1/3 lg:w-1/4 shadow-xl h-full border-r border-slate-200 z-10 relative dark:border-slate-700 transition-colors duration-300 overflow-hidden bg-white dark:bg-black">
+<body
+    class="bg-slate-100 text-slate-800 h-screen flex overflow-hidden dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
+<aside class="w-full md:w-1/3 lg:w-1/4 shadow-xl h-full border-r border-slate-200 z-10 relative dark:border-slate-700 transition-colors duration-300 overflow-hidden bg-white dark:bg-black">
         
-        <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0 hidden dark:block opacity-100">
+        <video autoplay muted loop playsinline 
+               class="absolute inset-0 w-full h-full object-cover z-0 hidden dark:block opacity-100">
             <source src="assets/videos/bucle2.mp4" type="video/mp4">
         </video>
-        <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0 block dark:hidden opacity-100">
+
+        <video autoplay muted loop playsinline 
+               class="absolute inset-0 w-full h-full object-cover z-0 block dark:hidden opacity-100">
             <source src="assets/videos/bucle3.mp4" type="video/mp4">
         </video>
 
-        <div class="absolute inset-0 bg-slate-900/60 z-0 backdrop-blur-[2px] hidden dark:block"></div>
-        <div class="absolute inset-0 bg-white/30 z-0 backdrop-blur-[3px] block dark:hidden"></div>
+        <div class="absolute inset-0 bg-slate-900/60 z-0 backdrop-blur-[3px] hidden dark:block"></div>
+        
+        <div class="absolute inset-0 bg-white/30 z-0 backdrop-blur-[1px] block dark:hidden"></div>
 
         <div class="relative z-10 flex flex-col h-full">
             
@@ -137,6 +112,7 @@
                 </div>
 
                 <div class="flex-grow"></div>
+
                 <div class="shrink-0 pt-6 mt-4 border-t border-slate-200/60 dark:border-white/10">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm p-1 overflow-hidden shrink-0">
@@ -152,18 +128,24 @@
                         <div class="flex justify-between"><span>Docente:</span><span>William C. Gutierrez</span></div>
                         <div class="flex justify-between"><span>Grupo:</span><span class="text-slate-800 dark:text-white font-bold">[E2]</span></div>
                     </div>
-                    <div class="bg-white/50 dark:bg-white/5 p-2 rounded border border-slate-200/50 dark:border-white/10 backdrop-blur-sm">
+                   <div class="bg-white/50 dark:bg-white/5 p-2 rounded border border-slate-200/50 dark:border-white/10 backdrop-blur-sm">
                         <p class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-2 text-center tracking-wider">Equipo de Desarrollo</p>
+                        
                         <ul class="text-[10px] text-slate-700 dark:text-slate-300 space-y-1 font-medium">
+                            
                             <li class="flex justify-between items-center px-1">
                                 <span><i class="fa-solid fa-user-graduate text-orange-500 mr-1"></i> Jhon Mindiola</span>
                                 <span class="text-[11px] opacity-70 font-mono bg-slate-200/0 dark:bg-black/30 px-1 rounded">0182410099</span>
                             </li>
+
                             <li class="flex justify-between items-center px-1">
                                 <span><i class="fa-solid fa-user-graduate text-orange-500 mr-1"></i> Yeleinys Gomez</span>
                                 <span class="text-[11px] opacity-70 font-mono bg-slate-200/0 dark:bg-black/30 px-1 rounded">0182410068</span>
                             </li>
-                            </ul>
+
+                         
+
+                        </ul>
                     </div>
                     <p class="text-[9px] text-slate-500 dark:text-slate-500 text-center mt-2">Riohacha, 2025</p>
                 </div>
@@ -171,57 +153,257 @@
         </div>
     </aside>
 
-    <main class="flex-1 h-full relative transition-colors duration-300 overflow-hidden bg-slate-100 dark:bg-slate-900">
-        
-        <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0 hidden dark:block opacity-80 pointer-events-none">
+
+<main class="flex-1 h-full overflow-y-auto relative transition-colors duration-300 overflow-hidden">        
+        <video autoplay muted loop playsinline 
+               class="fixed inset-0 w-full h-full object-cover pointer-events-none z-0 hidden dark:block opacity-80">
             <source src="assets/videos/bucle2.mp4" type="video/mp4">
         </video>
-        <div class="absolute inset-0 bg-slate-900/60 z-0 hidden dark:block pointer-events-none"></div>
+        <div class="fixed inset-0 bg-slate-900/60 z-0 hidden dark:block pointer-events-none"></div>
 
-        <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0 block dark:hidden opacity-100 pointer-events-none">
+
+        <video autoplay muted loop playsinline 
+               class="fixed inset-0 w-full h-full object-cover pointer-events-none z-0 block dark:hidden opacity-100">
             <source src="assets/videos/bucle3.mp4" type="video/mp4">
+                    <div class="fixed inset-0 bg-slate-900/80 z-0 hidden dark:block pointer-events-none"></div>
+
         </video>
-        <div class="absolute inset-0 bg-slate-900/10 z-0 block dark:hidden pointer-events-none"></div>
 
         <div class="relative z-10 h-full overflow-y-auto custom-scroll">
             
             <header class="bg-white/90 backdrop-blur-md shadow-sm px-8 py-4 flex justify-between items-center sticky top-0 z-20 dark:bg-slate-800/80 dark:border-b dark:border-slate-700/50 transition-colors duration-300">
                 <h2 class="text-lg font-semibold text-slate-700 dark:text-white">Panel de Resultados</h2>
                 <div class="flex gap-3">
-                    <button onclick="togglePerformance()" id="btn-perf" class="w-9 h-9 rounded-full bg-gray-100 text-slate-500 hover:bg-gray-200 flex items-center justify-center transition-colors dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600" title="Modo Bajo Rendimiento (Quitar Videos)">
+                    <button onclick="togglePerformance()" id="btn-perf"
+                        class="w-9 h-9 rounded-full bg-gray-100 text-slate-500 hover:bg-gray-200 flex items-center justify-center transition-colors dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600"
+                        title="Modo Bajo Rendimiento (Quitar Videos)">
                         <i class="fa-solid fa-gauge-high"></i>
                     </button>
-                    <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-full bg-gray-100 text-slate-500 hover:bg-gray-200 flex items-center justify-center transition-colors dark:bg-slate-700 dark:text-yellow-400 dark:hover:bg-slate-600" title="Cambiar Tema">
+                    <button onclick="toggleDarkMode()"
+                        class="w-9 h-9 rounded-full bg-gray-100 text-slate-500 hover:bg-gray-200 flex items-center justify-center transition-colors dark:bg-slate-700 dark:text-yellow-400 dark:hover:bg-slate-600"
+                        title="Cambiar Tema">
                         <i id="dark-mode-icon" class="fa-regular fa-moon"></i>
                     </button>
-                    <button id="btn-exportar" type="button" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium shadow hover:bg-indigo-700 transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-file-pdf"></i> Exportar Informe
-                    </button>
+<button id="btn-exportar" type="button"
+    class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium shadow hover:bg-indigo-700 transition-all flex items-center gap-2">
+    <i class="fa-solid fa-file-pdf"></i> Exportar Informe
+</button>
                 </div>
             </header>
 
-            <div class="p-8">
-                <div id="welcome-screen" class="flex flex-col items-center justify-center h-[70vh] text-center animate-fade-in relative w-full rounded-2xl overflow-hidden shadow-2xl" style="background-image: url('assets/imag/fondoUni.png'); background-size: cover; background-position: center;">
-                    <div class="absolute inset-0 bg-slate-900/80 z-0"></div>
-                    <div class="relative z-10 p-6">
-                        <div class="bg-white/10 backdrop-blur-sm p-6 rounded-full shadow-lg mb-6 inline-block border border-white/20">
-                            <img src="https://cdn-icons-png.flaticon.com/512/2800/2800208.png" alt="Stats" class="w-24 h-24 opacity-80">
+        <div class="p-8">
+         <div id="welcome-screen" 
+     class="flex flex-col items-center justify-center h-[70vh] text-center animate-fade-in relative w-full rounded-2xl overflow-hidden shadow-2xl"
+     style="background-image: url('assets/imag/fondoUni.png'); background-size: cover; background-position: center;">
+    
+    <div class="absolute inset-0 bg-slate-900/80 z-0"></div>
+
+    <div class="relative z-10 p-6">
+        <div class="bg-white/10 backdrop-blur-sm p-6 rounded-full shadow-lg mb-6 inline-block border border-white/20">
+                   <img src="https://cdn-icons-png.flaticon.com/512/2800/2800208.png" alt="Stats"
+                        class="w-24 h-24 opacity-80">
+        </div>
+        
+        <h3 class="text-3xl font-bold text-white mb-3 tracking-tight drop-shadow-lg">¡Bienvenido a tu Analizador!</h3>
+        <p class="text-slate-200 text-lg max-w-md mx-auto drop-shadow-md">
+            Selecciona una opción a la izquierda para comenzar.
+        </p>
+    </div>
+
+</div>
+
+            <div id="results-panel" class="hidden space-y-8 animate-fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    <div
+                        class="quant-only bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500 dark:bg-slate-800 dark:shadow-none transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-xs font-bold text-blue-500 uppercase">Media</p>
+                            <button onclick="verFormula('media')"
+                                class="text-slate-300 hover:text-blue-500 transition-colors" title="Ver fórmula"><i
+                                    class="fa-regular fa-circle-question"></i></button>
                         </div>
-                        <h3 class="text-3xl font-bold text-white mb-3 tracking-tight drop-shadow-lg">¡Bienvenido a tu Analizador!</h3>
-                        <p class="text-slate-200 text-lg max-w-md mx-auto drop-shadow-md">Selecciona una opción a la izquierda para comenzar.</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="val-media">--</h3>
+                    </div>
+                    <div
+                        class="quant-only bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-500 dark:bg-slate-800 dark:shadow-none transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-xs font-bold text-purple-500 uppercase">Mediana</p>
+                            <button onclick="verFormula('mediana')"
+                                class="text-slate-300 hover:text-purple-500 transition-colors" title="Ver fórmula"><i
+                                    class="fa-regular fa-circle-question"></i></button>
+                        </div>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="val-mediana">--</h3>
+                    </div>
+                    <div
+                        class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-pink-500 dark:bg-slate-800 dark:shadow-none transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-xs font-bold text-pink-500 uppercase">Moda</p>
+                            <button onclick="verFormula('moda')"
+                                class="text-slate-300 hover:text-pink-500 transition-colors" title="Ver fórmula"><i
+                                    class="fa-regular fa-circle-question"></i></button>
+                        </div>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="val-moda">--</h3>
+                    </div>
+                    <div
+                        class="quant-only bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500 dark:bg-slate-800 dark:shadow-none transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-xs font-bold text-emerald-500 uppercase">Rango</p>
+                            <button onclick="verFormula('rango')"
+                                class="text-slate-300 hover:text-emerald-500 transition-colors" title="Ver fórmula"><i
+                                    class="fa-regular fa-circle-question"></i></button>
+                        </div>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="val-rango">--</h3>
+                    </div>
+                    <div
+                        class="quant-only bg-white p-6 rounded-xl shadow-sm border-l-4 border-cyan-500 dark:bg-slate-800 dark:shadow-none transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-xs font-bold text-cyan-500 uppercase">Varianza (S²)</p>
+                            <button onclick="verFormula('varianza')"
+                                class="text-slate-300 hover:text-cyan-500 transition-colors" title="Ver fórmula"><i
+                                    class="fa-regular fa-circle-question"></i></button>
+                        </div>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="val-varianza">--</h3>
+                    </div>
+                    <div
+                        class="quant-only bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange-500 dark:bg-slate-800 dark:shadow-none transition-all">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-xs font-bold text-orange-500 uppercase">Desviación (S)</p>
+                            <button onclick="verFormula('desviacion')"
+                                class="text-slate-300 hover:text-orange-500 transition-colors" title="Ver fórmula"><i
+                                    class="fa-regular fa-circle-question"></i></button>
+                        </div>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="val-desviacion">--</h3>
                     </div>
                 </div>
 
-                <div id="results-panel" class="hidden space-y-8 animate-fade-in">
+                <div class="qual-only hidden flex flex-wrap gap-4 mb-6">
+                    <div
+                        class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500 dark:bg-slate-800 dark:shadow-none flex-1 min-w-[200px]">
+                        <p class="text-xs font-bold text-indigo-500 uppercase mb-1">Variedad</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white" id="val-total-cats">--</h3>
+                        <p class="text-xs text-slate-400 mt-1">Categorías únicas</p>
                     </div>
-            </div>
-        </div>
+                    <div
+                        class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-pink-500 dark:bg-slate-800 dark:shadow-none flex-1 min-w-[200px]">
+                        <p class="text-xs font-bold text-pink-500 uppercase mb-1">Categoría Top</p>
+                        <h3 class="text-xl font-bold text-slate-800 leading-tight break-words dark:text-white"
+                            id="val-top-cat">--</h3>
+                        <p class="text-xs text-slate-400 mt-2" id="val-top-pct">--% del total</p>
+                    </div>
+                    <div
+                        class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-gray-500 dark:bg-slate-800 dark:shadow-none flex-1 min-w-[200px]">
+                        <p class="text-xs font-bold text-gray-500 uppercase mb-1">Menos Común</p>
+                        <h3 class="text-xl font-bold text-slate-800 leading-tight break-words dark:text-white"
+                            id="val-min-cat">--</h3>
+                        <p class="text-xs text-slate-400 mt-2">La más rara</p>
+                    </div>
+                    <div id="card-mediana-ordinal"
+                        class="hidden bg-white p-5 rounded-xl shadow-sm border-l-4 border-purple-500 dark:bg-slate-800 dark:shadow-none flex-1 min-w-[200px]">
+                        <p class="text-xs font-bold text-purple-500 uppercase mb-1">Mediana (Ordinal)</p>
+                        <h3 class="text-xl font-bold text-slate-800 leading-tight break-words dark:text-white"
+                            id="val-mediana-ordinal">--</h3>
+                        <p class="text-xs text-slate-400 mt-2">Valor central</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mb-4">
+                    <span id="badge-tipo-dato"
+                        class="bg-gray-100 text-gray-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide hidden">--</span>
+                </div>
+
+                <div
+                    class="bg-indigo-50 border border-indigo-100 rounded-xl p-6 dark:bg-slate-800 dark:border-indigo-900/50">
+                    <h4 class="font-bold text-indigo-800 mb-2 flex items-center gap-2 dark:text-indigo-400"><i
+                            class="fa-solid fa-robot"></i> Análisis Inteligente</h4>
+                    <p id="analisis-texto" class="text-sm text-indigo-900/80 dark:text-slate-300 leading-relaxed">Aquí
+                        aparecerá la interpretación automática...</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <div
+                        class="lg:col-span-3 bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col dark:bg-slate-800 dark:border-slate-700 relative">
+
+                        <button onclick="resetZoom('histograma')"
+                            class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-gray-100 text-slate-500 hover:bg-gray-200 flex items-center justify-center transition-all dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+                            title="Reiniciar Zoom">
+                            <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                        </button>
+
+                        <h4 class="font-bold text-slate-700 mb-4 dark:text-slate-200">Histograma / Distribución (Vista
+                            Completa)</h4>
+
+                        <div class="relative h-[500px] w-full">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 text-center">Usa la rueda del mouse para hacer zoom y ver
+                            los detalles.</p>
+                    </div>
+
+                    <div
+                        class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col dark:bg-slate-800 dark:border-slate-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold text-slate-700 dark:text-slate-200">Diagrama de Caja y Bigotes</h4>
+                            <div class="flex items-center gap-3">
+                                <button onclick="resetZoom('boxplot')"
+                                    class="w-8 h-8 rounded-full bg-gray-100 text-slate-500 hover:bg-gray-200 flex items-center justify-center transition-all dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+                                    title="Reiniciar Zoom">
+                                    <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                                </button>
+                                <button onclick="verAyudaBoxplot()"
+                                    class="text-slate-400 hover:text-indigo-500 transition-colors"
+                                    title="¿Cómo leer esto?">
+                                    <i class="fa-regular fa-circle-question text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative h-64 w-full"> <canvas id="boxPlotChart"></canvas>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2 text-center">Muestra: Mínimo, Q1, Mediana, Q3, Máximo y
+                            valores atípicos.</p>
+                    </div>
+
+                    <div
+                        class="bg-white rounded-xl shadow-sm overflow-hidden dark:bg-slate-800 dark:shadow-none border dark:border-slate-700 flex flex-col max-h-[400px]">
+                        <div
+                            class="px-6 py-4 border-b border-slate-100 bg-gray-50 dark:bg-slate-700 dark:border-slate-600 shrink-0">
+                            <h4 class="font-bold text-slate-700 dark:text-white">Tabla de Frecuencias</h4>
+                        </div>
+                        <div class="overflow-auto custom-scroll flex-1 relative">
+                            <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400">
+                                <thead
+                                    class="text-xs text-slate-700 font-bold bg-slate-100 dark:bg-slate-900 dark:text-slate-300 sticky top-0 z-10 shadow-sm">
+                                    <tr>
+                                        <th class="px-6 py-3">Dato</th>
+                                        <th class="px-6 py-3">fi</th>
+                                        <th class="px-6 py-3">Fi</th>
+                                        <th class="px-6 py-3">hi</th>
+                                        <th class="px-6 py-3">%</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="frequency-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div
+                        class="lg:col-span-3 bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col dark:bg-slate-800 dark:border-slate-700">
+                        <h4 class="font-bold text-slate-700 mb-4 dark:text-slate-200">Gráfico Circular (Composición)
+                        </h4>
+                        <div class="relative h-[800px] w-full">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+
+                
     </main>
-
-    <button onclick="verManualUsuario()" class="fixed bottom-6 right-6 bg-slate-800 text-white w-14 h-14 rounded-full shadow-2xl shadow-slate-500/50 flex items-center justify-center hover:scale-110 transition-transform z-50 dark:bg-orange-600 dark:shadow-orange-900/50" title="Manual de Usuario">
-        <i class="fa-solid fa-book-open text-xl"></i>
-    </button>
-
+<button onclick="verManualUsuario()"
+                    class="fixed bottom-6 right-6 bg-slate-800 text-white w-14 h-14 rounded-full shadow-2xl shadow-slate-500/50 flex items-center justify-center hover:scale-110 transition-transform z-50 dark:bg-orange-600 dark:shadow-orange-900/50"
+                    title="Manual de Usuario">
+                    <i class="fa-solid fa-book-open text-xl"></i>
+                </button>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
@@ -230,10 +412,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@sgratzl/chartjs-chart-boxplot@4.4.0/build/index.umd.min.js"></script>
+
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
     <script src="js/statistics.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>
