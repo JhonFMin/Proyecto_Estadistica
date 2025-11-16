@@ -1651,3 +1651,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 100);
     }
 });
+// --- SOLUCIÓN: PREVENIR APERTURA DE PESTAÑA AL ARRASTRAR ---
+
+const dropZone = document.getElementById('input-file-container');
+const fileInput = document.getElementById('file-upload');
+
+if (dropZone) {
+    // 1. Prevenir comportamiento por defecto en todo el documento
+    // (Para que si fallas al soltar y cae fuera, tampoco se abra)
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        document.body.addEventListener(eventName, preventDefaults, false);
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // 2. Efectos visuales (Opcional: se ilumina cuando pasas el archivo por encima)
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropZone.classList.add('border-orange-500', 'bg-orange-50', 'dark:bg-white/10');
+    }
+    function unhighlight(e) {
+        dropZone.classList.remove('border-orange-500', 'bg-orange-50', 'dark:bg-white/10');
+    }
+
+    // 3. Manejar la caída del archivo (DROP)
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+            // Asignamos los archivos al input invisible para que tu función 'procesarArchivoUnificado' funcione
+            fileInput.files = files;
+            
+            // Llamamos manualmente a tu función de procesamiento
+            procesarArchivoUnificado(fileInput);
+        }
+    }
+}
