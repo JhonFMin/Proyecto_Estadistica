@@ -63,8 +63,7 @@ function animarValor(id, valorFinal) {
 
 async function procesarDatos(modoAutomatico = false) { // <--- PARÁMETRO NUEVO
     const textoRaw = document.getElementById('data-input').value;
-    let datosCrudos = textoRaw.split(/,\s*|\n+/).map(val => val.trim()).filter(val => val !== "");
-
+let datosCrudos = textoRaw.split(/[\s,\n]+/).map(val => val.trim()).filter(val => val !== "");
     if (datosCrudos.length === 0) {
         Toast.fire({ icon: 'error', title: 'No hay datos válidos para analizar' });
         return;
@@ -551,20 +550,41 @@ function verAyudaFormato() {
 }
 
 function verAtajos() {
+    const kbdStyle = "bg-slate-100 px-2 py-1 rounded border border-slate-300 font-mono text-xs dark:bg-slate-700 dark:border-slate-600 dark:text-white font-bold shadow-sm";
+    
     Swal.fire({
-        title: 'Atajos de Teclado',
+        title: '<i class="fa-regular fa-keyboard text-indigo-500"></i> Atajos de Teclado',
+        width: '600px',
         html: `
-            <div class="text-left space-y-3 text-sm text-slate-600 dark:text-slate-300">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2"><span>Analizar datos</span><kbd class="bg-slate-100 px-2 py-1 rounded border border-slate-300 font-mono text-xs dark:bg-slate-700 dark:border-slate-600">Enter</kbd></div>
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2"><span>Separar números</span><kbd class="bg-slate-100 px-2 py-1 rounded border border-slate-300 font-mono text-xs dark:bg-slate-700 dark:border-slate-600">Espacio</kbd></div>
-                <div class="flex justify-between items-center border-b border-slate-100 pb-2"><span>Analizar (Global)</span><kbd class="bg-slate-100 px-2 py-1 rounded border border-slate-300 font-mono text-xs dark:bg-slate-700 dark:border-slate-600">Ctrl + Enter</kbd></div>
-                <div class="flex justify-between items-center"><span>Modo Oscuro</span><div class="text-xs text-orange-500">Clic en la Luna 🌙</div></div>
+            <div class="text-left space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-orange-500 text-xs uppercase mb-2">Edición</h4>
+                        <div class="flex justify-between items-center"><span class="text-xs">Analizar (en caja)</span><kbd class="${kbdStyle}">Enter</kbd></div>
+                        <div class="flex justify-between items-center"><span class="text-xs">Separar datos</span><kbd class="${kbdStyle}">Espacio</kbd></div>
+                        <div class="flex justify-between items-center"><span class="text-xs">Limpiar Todo</span><kbd class="${kbdStyle}">Alt + Supr</kbd></div>
+                        <div class="flex justify-between items-center"><span class="text-xs">Datos de Prueba</span><kbd class="${kbdStyle}">Alt + D</kbd></div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-blue-500 text-xs uppercase mb-2">Acciones</h4>
+                        <div class="flex justify-between items-center"><span class="text-xs">Analizar (Global)</span><kbd class="${kbdStyle}">Ctrl + Enter</kbd></div>
+                        <div class="flex justify-between items-center"><span class="text-xs">Guardar Sesión</span><kbd class="${kbdStyle}">Alt + S</kbd></div>
+                        <div class="flex justify-between items-center"><span class="text-xs">Abrir Sesiones</span><kbd class="${kbdStyle}">Alt + O</kbd></div>
+                        <div class="flex justify-between items-center"><span class="text-xs">Exportar PDF</span><kbd class="${kbdStyle}">Alt + P</kbd></div>
+                        <div class="flex justify-between items-center"><span class="text-xs">Modo Oscuro</span><kbd class="${kbdStyle}">Alt + T</kbd></div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 text-[10px] text-center opacity-70 italic">
+                    * Usa estos atajos para trabajar como un profesional 🚀
+                </div>
             </div>
         `,
-        icon: 'question',
-        confirmButtonText: '¡Genial!',
+        showConfirmButton: true,
+        confirmButtonText: '¡Entendido!',
         confirmButtonColor: '#3b82f6',
-        customClass: { popup: 'rounded-2xl dark:bg-slate-800 dark:text-white' }
+        customClass: { popup: 'rounded-2xl dark:bg-slate-900 dark:text-white border dark:border-slate-700' }
     });
 }
 
@@ -600,6 +620,81 @@ document.addEventListener('DOMContentLoaded', () => {
             exportarPDF();
         });
     }
+    const input = document.getElementById('data-input');
+
+    // 1. Atajo: Espacio -> Escribe ", "
+    input.addEventListener('keydown', function(e) {
+        if (e.key === ' ') {
+            e.preventDefault(); // Evita el espacio normal
+            
+            // Inserta ", " donde esté el cursor
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            this.value = this.value.substring(0, start) + ", " + this.value.substring(end);
+            
+            // Mueve el cursor después de la coma
+            this.selectionStart = this.selectionEnd = start + 2;
+        }
+    });
+
+    // 2. Atajo: Enter dentro del input -> Analizar (en vez de salto de línea)
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { // Si presionas Enter sin Shift
+            e.preventDefault();
+            procesarDatos(); // Ejecuta el análisis
+        }
+    });
+
+    // 3. Atajo Global: Ctrl + Enter -> Analizar desde cualquier lado
+   // --- GESTOR MAESTRO DE ATAJOS DE TECLADO ---
+    document.addEventListener('keydown', (e) => {
+        
+        // 1. Analizar Global (Ctrl + Enter)
+        if (e.ctrlKey && e.key === 'Enter') {
+            e.preventDefault(); // Evita que se inserte salto de línea si estás en textarea
+            procesarDatos();
+            return;
+        }
+
+        // Si estamos escribiendo en el input, no queremos activar atajos de letras (como 'D' o 'S')
+        // a menos que usemos ALT.
+        const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+
+        // --- ATAJOS CON ALT (Funcionan siempre) ---
+        if (e.altKey) {
+            switch(e.key.toLowerCase()) {
+                case 'd': // Alt + D: Demo
+                    e.preventDefault();
+                    cargarDemo();
+                    break;
+                case 'delete': // Alt + Supr/Delete: Limpiar
+                case 'backspace':
+                    e.preventDefault();
+                    limpiarDatos();
+                    break;
+                case 's': // Alt + S: Save (Guardar)
+                    e.preventDefault();
+                    Sesion.guardar();
+                    break;
+                case 'o': // Alt + O: Open (Abrir)
+                    e.preventDefault();
+                    Sesion.listar();
+                    break;
+                case 'p': // Alt + P: PDF
+                    e.preventDefault();
+                    exportarPDF();
+                    break;
+                case 't': // Alt + T: Tema (Dark Mode)
+                    e.preventDefault();
+                    toggleDarkMode();
+                    break;
+                case 'l': // Alt + L: Low Performance
+                    e.preventDefault();
+                    togglePerformance();
+                    break;
+            }
+        }
+    });
 });
 
 
@@ -1287,20 +1382,23 @@ async function exportarPDF(e) {
 }
 function verManualUsuario() {
     Swal.fire({
-        title: '<strong>Manual de Usuario 2.0</strong>',
-        width: '850px', // Un poco más ancho para que quepa la info nueva
+        title: '<strong>Manual de Usuario</strong>',
+        width: '900px',
         html: `
-            <div class="text-left text-sm text-slate-600 dark:text-slate-300 space-y-6 px-2 max-h-[60vh] overflow-y-auto custom-scroll">
+            <div class="text-left text-sm text-slate-600 dark:text-slate-300 space-y-6 px-2 max-h-[65vh] overflow-y-auto custom-scroll">
                 
                 <div class="flex gap-4 items-start border-b border-slate-100 dark:border-slate-700 pb-4">
                     <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex-shrink-0 flex items-center justify-center font-bold"><i class="fa-solid fa-database"></i></div>
                     <div>
-                        <h3 class="font-bold text-slate-800 dark:text-white text-base">1. Fuente de Datos Inteligente</h3>
-                        <p class="mt-1 text-xs">El sistema ahora reconoce automáticamente lo que ingresas:</p>
+                        <h3 class="font-bold text-slate-800 dark:text-white text-base">1. Ingreso de Datos Inteligente</h3>
                         <ul class="list-disc pl-5 mt-1 space-y-1 text-xs">
-                            <li><strong>Manual:</strong> Escribe números separados por comas, espacios o Enter.</li>
-                            <li><strong>Importar Excel/TXT:</strong> Arrastra archivos <code>.xlsx</code> o <code>.csv</code> al área punteada para cargar los datos.</li>
-                            <li><strong>Restaurar Respaldo (.json):</strong> Arrastra un archivo de sesión <code>.json</code> para recuperar instantáneamente tus datos, nombre de sesión y configuración.</li>
+                            <li><strong>Manual:</strong> Escribe números separados por espacio, coma o Enter. El sistema detecta si son Cualitativos o Cuantitativos.</li>
+                            <li><strong>Arrastrar y Soltar:</strong>
+                                <ul class="list-none pl-2 mt-1 text-[10px] opacity-80">
+                                    <li>📄 <code>.xlsx / .csv</code>: Carga los datos automáticamente.</li>
+                                    <li>💾 <code>.json</code>: Restaura una <strong>Sesión Completa</strong> (Datos + Configuración + Nombre).</li>
+                                </ul>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -1308,49 +1406,51 @@ function verManualUsuario() {
                 <div class="flex gap-4 items-start border-b border-slate-100 dark:border-slate-700 pb-4">
                     <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex-shrink-0 flex items-center justify-center font-bold"><i class="fa-solid fa-sliders"></i></div>
                     <div>
-                        <h3 class="font-bold text-slate-800 dark:text-white text-base">2. Configuración Estadística</h3>
-                        <p class="mt-1 text-xs">Define el contexto matemático antes de analizar:</p>
-                        <ul class="list-disc pl-5 mt-1 space-y-1 text-xs">
-                            <li><strong>Muestra (n-1):</strong> Úsalo para encuestas o subconjuntos de datos. (Calcula Varianza Muestral S²).</li>
-                            <li><strong>Población (N):</strong> Úsalo si tienes TODOS los datos del universo estudiado. (Calcula Varianza Poblacional σ²).</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="flex gap-4 items-start border-b border-slate-100 dark:border-slate-700 pb-4">
-                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex-shrink-0 flex items-center justify-center font-bold"><i class="fa-solid fa-floppy-disk"></i></div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 dark:text-white text-base">3. Gestión de Sesiones (Persistencia)</h3>
-                        <p class="mt-1 text-xs">No pierdas tu progreso. Usa la barra inferior izquierda:</p>
-                        <div class="grid grid-cols-3 gap-2 mt-2 text-center">
-                            <div class="bg-slate-50 dark:bg-slate-700 p-2 rounded border border-slate-200 dark:border-slate-600">
-                                <i class="fa-solid fa-save text-orange-500 mb-1"></i>
-                                <div class="font-bold text-[10px]">Guardar</div>
-                                <div class="text-[9px] opacity-70">En navegador</div>
+                        <h3 class="font-bold text-slate-800 dark:text-white text-base">2. Muestra vs. Población</h3>
+                        <p class="mt-1 text-xs">Define la fórmula matemática antes de analizar:</p>
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <div class="bg-slate-50 dark:bg-white/5 p-2 rounded border border-slate-200 dark:border-white/10 text-[10px]">
+                                <strong>Muestra (n-1)</strong><br>Para encuestas o subconjuntos. Aplica corrección de Bessel.
                             </div>
-                            <div class="bg-slate-50 dark:bg-slate-700 p-2 rounded border border-slate-200 dark:border-slate-600">
-                                <i class="fa-solid fa-folder-open text-blue-500 mb-1"></i>
-                                <div class="font-bold text-[10px]">Abrir</div>
-                                <div class="text-[9px] opacity-70">Historial local</div>
-                            </div>
-                            <div class="bg-slate-50 dark:bg-slate-700 p-2 rounded border border-slate-200 dark:border-slate-600">
-                                <i class="fa-solid fa-download text-green-500 mb-1"></i>
-                                <div class="font-bold text-[10px]">Exportar</div>
-                                <div class="text-[9px] opacity-70">Archivo .json</div>
+                            <div class="bg-slate-50 dark:bg-white/5 p-2 rounded border border-slate-200 dark:border-white/10 text-[10px]">
+                                <strong>Población (N)</strong><br>Para censos o datos totales. Usa fórmula estándar.
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex gap-4 items-start">
-                    <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex-shrink-0 flex items-center justify-center font-bold"><i class="fa-solid fa-chart-simple"></i></div>
+                <div class="flex gap-4 items-start border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex-shrink-0 flex items-center justify-center font-bold"><i class="fa-solid fa-file-pdf"></i></div>
                     <div>
-                        <h3 class="font-bold text-slate-800 dark:text-white text-base">4. Interactividad y Reportes</h3>
+                        <h3 class="font-bold text-slate-800 dark:text-white text-base">3. Reportes Profesionales</h3>
                         <ul class="list-disc pl-5 mt-1 space-y-1 text-xs">
-                            <li><strong>Zoom y Arrastre:</strong> Usa la rueda del mouse sobre el Histograma o el Boxplot para hacer zoom. Haz clic y arrastra para moverte por los datos.</li>
-                            <li><strong>Paso a Paso:</strong> Haz clic en los signos de interrogación <i class="fa-regular fa-circle-question text-indigo-400"></i> para ver la fórmula matemática aplicada con tus números reales.</li>
-                            <li><strong>PDF:</strong> El botón "Exportar Informe" genera un documento profesional con todos los cálculos y gráficos, listo para entregar.</li>
+                            <li><strong>PDF Ultra HD:</strong> Genera un informe con portada, conclusiones automáticas, tablas institucionales y gráficos vectorizados en alta calidad.</li>
+                            <li><strong>Persistencia:</strong> Usa la barra inferior izquierda para Guardar/Cargar tu trabajo en el navegador o exportarlo como archivo.</li>
                         </ul>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 items-start">
+                    <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex-shrink-0 flex items-center justify-center font-bold"><i class="fa-solid fa-keyboard"></i></div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 dark:text-white text-base">4. Herramientas Power User</h3>
+                        
+                        <div class="mt-2 bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-600">
+                            <h4 class="font-bold text-xs text-slate-500 dark:text-slate-400 uppercase mb-2">Atajos de Teclado</h4>
+                            <div class="grid grid-cols-3 gap-2 text-[10px] font-mono">
+                                <div><span class="bg-white dark:bg-slate-700 border px-1 rounded">Alt + D</span> Demo</div>
+                                <div><span class="bg-white dark:bg-slate-700 border px-1 rounded">Alt + P</span> PDF</div>
+                                <div><span class="bg-white dark:bg-slate-700 border px-1 rounded">Alt + S</span> Guardar</div>
+                                <div><span class="bg-white dark:bg-slate-700 border px-1 rounded">Alt + O</span> Abrir</div>
+                                <div><span class="bg-white dark:bg-slate-700 border px-1 rounded">Alt + T</span> Tema</div>
+                                <div><span class="bg-white dark:bg-slate-700 border px-1 rounded">Alt + L</span> Rendimiento</div>
+                            </div>
+                        </div>
+
+                        <p class="mt-2 text-xs">
+                            <strong class="text-orange-500"><i class="fa-solid fa-gauge-high"></i> Modo Bajo Rendimiento:</strong> 
+                            Si tu PC es lento, actívalo en la barra superior. Desactiva videos y efectos de transparencia para máxima velocidad.
+                        </p>
                     </div>
                 </div>
 
@@ -1358,7 +1458,7 @@ function verManualUsuario() {
         `,
         showCloseButton: true,
         focusConfirm: false,
-        confirmButtonText: '¡Entendido, a trabajar!',
+        confirmButtonText: '¡Entendido!',
         confirmButtonColor: '#3b82f6',
         customClass: { popup: 'rounded-2xl dark:bg-slate-900 dark:text-white' }
     });
