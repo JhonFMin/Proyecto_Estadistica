@@ -61,25 +61,50 @@ function animarValor(id, valorFinal) {
 // --- FUNCIÓN PRINCIPAL (Ahora ASYNC y CORREGIDA) ---
 // En main.js
 
-async function procesarDatos(modoAutomatico = false) { // <--- PARÁMETRO NUEVO
+async function procesarDatos(modoAutomatico = false) {
     const textoRaw = document.getElementById('data-input').value;
-let datosCrudos = textoRaw.split(/[\s,\n]+/).map(val => val.trim()).filter(val => val !== "");
-    if (datosCrudos.length === 0) {
-        Toast.fire({ icon: 'error', title: 'No hay datos válidos para analizar' });
+
+    // --- CORRECCIÓN: SEPARACIÓN INTELIGENTE ---
+    // 1. Primero cortamos por lo seguro: Comas, Puntos y Coma, o Enters.
+    // Esto mantiene juntas frases como "Muy Satisfecho".
+    let datosPre = textoRaw.split(/[,;\n]+/).map(val => val.trim()).filter(val => val !== "");
+
+    if (datosPre.length === 0) {
+        Toast.fire({ icon: 'error', title: 'No hay datos válidos' });
         return;
     }
+
+    let datosCrudos = [];
+    
+    // 2. Analizamos el primer dato para decidir qué hacer
+    const muestra = datosPre[0];
+    
+    // ¿Empieza con número? (ej: "10" o "-5")
+    const empiezaConNumero = /^-?\d/.test(muestra);
+    // ¿Tiene espacios en medio?
+    const tieneEspacios = muestra.includes(' ');
+
+    if (empiezaConNumero && tieneEspacios) {
+        // CASO A: Números pegados con espacios (Ej: "1 2 3 4")
+        // Aquí SÍ cortamos por espacios para separarlos
+        datosCrudos = textoRaw.split(/[\s,;\n]+/).map(val => val.trim()).filter(val => val !== "");
+    } else {
+        // CASO B: Texto (Ej: "Muy Bueno") o Números ya separados por comas
+        // Aquí NO cortamos por espacios para no romper las frases
+        datosCrudos = datosPre;
+    }
+    // ----------------------------------------------
 
     // --- 1. DETECCIÓN ---
     let conteoNumeros = 0;
     datosCrudos.forEach(d => {
         if (Estadistica.esNumero(d)) conteoNumeros++;
     });
+    // Si más del 90% son números, es cuantitativa
     const esCuantitativaDetectada = (conteoNumeros / datosCrudos.length) > 0.9;
-
     let esCuantitativa = esCuantitativaDetectada;
 
     // --- 2. CONFIRMACIÓN (SOLO SI NO ES AUTOMÁTICO) ---
-    // Si NO es automático, preguntamos. Si ES automático, nos saltamos esto.
     if (!modoAutomatico) {
         const tipoDetectado = esCuantitativaDetectada ? "Cuantitativa (Números)" : "Cualitativa (Texto)";
         const iconoDetectado = esCuantitativaDetectada ? "fa-calculator" : "fa-font";
@@ -108,18 +133,17 @@ let datosCrudos = textoRaw.split(/[\s,\n]+/).map(val => val.trim()).filter(val =
             return;
         }
     }
-    // Si es automático, simplemente confiamos en 'esCuantitativaDetectada'
 
-    // --- 3. PROCESAMIENTO ---
+    // --- 3. PROCESAMIENTO Y CÁLCULOS ---
     const tipoDatoFinal = esCuantitativa ? 'cuantitativo' : 'cualitativo';
     const badge = document.getElementById('badge-tipo-dato');
     const quantCards = document.querySelectorAll('.quant-only');
+    const qualCards = document.querySelectorAll('.qual-only');
 
     let media, mediana, rango, varianza, desviacion;
     let mediaStr, medianaStr, modaStr, rangoStr, varianzaStr, desviacionStr;
-
     let tabla;
-    let datosParaGraficos = [];
+    let datosParaGraficos = []; 
     let datosParaAyuda = [];
 
     if (esCuantitativa) {
@@ -129,8 +153,6 @@ let datosCrudos = textoRaw.split(/[\s,\n]+/).map(val => val.trim()).filter(val =
 
         const esDiscreto = datosNum.every(num => Number.isInteger(num));
         const tipoVariable = esDiscreto ? "Cuantitativa Discreta" : "Cuantitativa Continua";
-
-        // --- LEER CONFIGURACIÓN MUESTRA/POBLACIÓN ---
         const radioPoblacion = document.querySelector('input[name="tipo-calculo"][value="poblacion"]');
         const esPoblacion = radioPoblacion ? radioPoblacion.checked : false;
 
@@ -138,8 +160,6 @@ let datosCrudos = textoRaw.split(/[\s,\n]+/).map(val => val.trim()).filter(val =
         mediana = Estadistica.mediana(datosNum);
         const modaObj = Estadistica.moda(datosNum, tipoDatoFinal);
         rango = Estadistica.rango(datosNum);
-
-        // Usamos el booleano esPoblacion
         varianza = Estadistica.varianza(datosNum, media, esPoblacion);
         desviacion = Estadistica.desviacion(varianza);
         tabla = Estadistica.tablaFrecuencias(datosNum, true);
@@ -152,7 +172,7 @@ let datosCrudos = textoRaw.split(/[\s,\n]+/).map(val => val.trim()).filter(val =
         desviacionStr = desviacion.toFixed(2);
 
         quantCards.forEach(card => card.classList.remove('hidden'));
-        document.querySelectorAll('.qual-only').forEach(card => card.classList.add('hidden'));
+        qualCards.forEach(card => card.classList.add('hidden'));
 
         badge.innerText = tipoVariable;
         badge.className = esDiscreto
@@ -162,18 +182,19 @@ let datosCrudos = textoRaw.split(/[\s,\n]+/).map(val => val.trim()).filter(val =
         generarInterpretacion(datosNum, media, desviacion, rango);
 
     } else {
+        // Lógica Cualitativa
         const datosTexto = datosCrudos;
-        datosParaGraficos = [];
-        datosParaAyuda = datosTexto;
+        datosParaGraficos = []; 
+        datosParaAyuda = datosTexto; 
 
-        tabla = Estadistica.tablaFrecuencias(datosTexto, false);
+        tabla = Estadistica.tablaFrecuencias(datosTexto, false); 
         const modaObj = Estadistica.moda(datosTexto, tipoDatoFinal);
-
+        
         const resultadoOrdinal = Estadistica.analisisOrdinal(datosTexto);
         const cardMedianaOrd = document.getElementById('card-mediana-ordinal');
 
         quantCards.forEach(card => card.classList.add('hidden'));
-        document.querySelectorAll('.qual-only').forEach(card => card.classList.remove('hidden'));
+        qualCards.forEach(card => card.classList.remove('hidden'));
 
         if (resultadoOrdinal) {
             badge.innerText = "Variable Cualitativa Ordinal";
@@ -181,16 +202,16 @@ let datosCrudos = textoRaw.split(/[\s,\n]+/).map(val => val.trim()).filter(val =
             cardMedianaOrd.classList.remove('hidden');
             document.getElementById('val-mediana-ordinal').innerText = resultadoOrdinal.mediana;
             medianaStr = resultadoOrdinal.mediana;
-            mediana = resultadoOrdinal.mediana;
+            mediana = resultadoOrdinal.mediana; 
         } else {
             badge.innerText = "Variable Cualitativa Nominal";
             badge.className = "bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide";
             cardMedianaOrd.classList.add('hidden');
             medianaStr = "--";
-            mediana = null;
+            mediana = null; 
         }
 
-        const topCat = tabla[0];
+        const topCat = tabla[0]; 
         const minCat = tabla[tabla.length - 1];
         document.getElementById('val-total-cats').innerText = tabla.length;
 
@@ -205,27 +226,26 @@ let datosCrudos = textoRaw.split(/[\s,\n]+/).map(val => val.trim()).filter(val =
         }
 
         mediaStr = rangoStr = varianzaStr = desviacionStr = "--";
-        modaStr = modaObj.valor;
-        media = rango = varianza = desviacion = null;
+        modaStr = modaObj.valor; 
+        media = rango = varianza = desviacion = null; 
 
         let textoInterpretacion = `Análisis de <strong>${datosTexto.length} datos cualitativos</strong>.<br>`;
         if (resultadoOrdinal) textoInterpretacion += `Se detectó un <strong>orden jerárquico</strong>.<br>`;
         if (topCat.fi !== minCat.fi) textoInterpretacion += `La categoría predominante es <strong>"${topCat.x}"</strong>.`;
         document.getElementById('analisis-texto').innerHTML = textoInterpretacion;
     }
-
+    
     badge.classList.remove('hidden');
 
     mostrarResultados(mediaStr, medianaStr, modaStr, rangoStr, varianzaStr, desviacionStr);
     generarTablaHTML(tabla);
-    generarGraficos(tabla, datosParaGraficos, tipoDatoFinal);
+    generarGraficos(tabla, datosParaGraficos, tipoDatoFinal); 
     actualizarBotonesAyuda(datosParaAyuda, media, rango, varianza, desviacion, mediana, modaStr);
 
     document.getElementById('welcome-screen').classList.add('hidden');
     document.getElementById('results-panel').classList.remove('hidden');
 
-    // Solo mostramos la alerta de éxito si NO es automático (para no saturar)
-    if (!modoAutomatico) {
+    if(!modoAutomatico) {
         Toast.fire({ icon: 'success', title: esCuantitativa ? 'Análisis Numérico Completo' : 'Análisis Cualitativo Completo' });
     }
 }
