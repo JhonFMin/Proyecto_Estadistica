@@ -103,8 +103,7 @@ const Estadistica = {
             // Tallas
             ['xs', 's', 'm', 'l', 'xl', 'xxl'],
             // Nivel Educativo
-            ['ninguno', 'primaria', 'secundaria', 'pregrado', 'posgrado'],
-            ['basica', 'media', 'tecnico', 'tecnologo', 'profesional', 'especializacion', 'maestria', 'doctorado'],
+            ['ninguno', 'primaria', 'secundaria', 'tecnico', 'tecnologo', 'pregrado', 'posgrado', 'especializacion', 'maestria', 'doctorado'],
             // Estratos (simplificado)
             ['estrato 1', 'estrato 2', 'estrato 3', 'estrato 4', 'estrato 5', 'estrato 6'],
             // Notas (conceptual)
