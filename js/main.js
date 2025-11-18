@@ -1006,8 +1006,7 @@ function verFormula(tipo) {
             color = "#3b82f6";
             // La fórmula visual cambia ligeramente la notación (µ vs x̄)
             formulaGenerica = esPoblacion ? "$$\\mu = \\frac{\\sum x_i}{N}$$" : "$$\\bar{x} = \\frac{\\sum x_i}{n}$$";
-            calculoReal = Estadistica.generarPasoPaso('media', d.datos, d.media.toFixed(2));
-            explicacion = "Suma de todos los datos dividida entre la cantidad total.";
+calculoReal = Estadistica.generarPasoPaso('media', d.datos, d.media.toFixed(2), null, esPoblacion);            explicacion = "Suma de todos los datos dividida entre la cantidad total.";
             break;
 
         case 'mediana':
