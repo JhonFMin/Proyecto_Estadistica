@@ -1407,6 +1407,14 @@ function verManualUsuario() {
         html: `
             <div class="text-left text-sm text-slate-600 dark:text-slate-300 space-y-6 px-2 max-h-[65vh] overflow-y-auto custom-scroll">
                 
+                <div class="bg-indigo-50 dark:bg-indigo-500/10 p-4 rounded-lg border border-indigo-100 dark:border-indigo-500/20 text-center mb-6">
+                    <p class="text-indigo-800 dark:text-indigo-200 leading-relaxed text-xs sm:text-sm">
+                        Esta herramienta es una solución integral para el <strong>Análisis Estadístico Descriptivo</strong>. 
+                        Permite procesar datos crudos para obtener automáticamente <strong>tablas de frecuencia, medidas de tendencia central y dispersión</strong>, 
+                        junto con gráficos interactivos y reportes profesionales listos para imprimir.
+                    </p>
+                </div>
+                
                 <div class="flex gap-4 items-start border-b border-slate-100 dark:border-slate-700 pb-4">
                     <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex-shrink-0 flex items-center justify-center font-bold"><i class="fa-solid fa-database"></i></div>
                     <div>
