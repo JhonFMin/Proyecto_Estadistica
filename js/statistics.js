@@ -191,14 +191,26 @@ generarPasoPaso: (tipo, datos, resultado, extra = null, esPoblacion = false) => 
         const n = datos ? datos.length : 0; // Evitamos error si datos es null
 
         switch(tipo) {
-            // ... (otros casos: media, rango, etc) ...
+     
+case 'media':
+                // Mostramos los números 
+                const sumStr = datos.slice(0, Infinity).join(" + ");
+                const continuacion = datos.length > Infinity ? " + ..." : "";
+                // Muestra la suma dividida por el total
+                return `$$ \\frac{${sumStr}${continuacion}}{${n}} = ${resultado} $$`;
 
+            // --- CASO 2: RANGO (FALTABA ESTO) ---
+            case 'rango':
+                const max = Math.max(...datos);
+                const min = Math.min(...datos);
+                // Muestra Mayor - Menor
+                return `$$ ${max} - ${min} = ${resultado} $$`;
             case 'varianza':
                 const mediaVar = extra;
-                // Limitamos a mostrar máx 6 términos para no saturar la pantalla si hay muchos datos
-                const datosMuestra = datos.slice(0, 6);
+                
+                const datosMuestra = datos.slice(0, Infinity);
                 let terminos = datosMuestra.map(d => `(${d} - ${mediaVar})^2`).join(" + ");
-                if (datos.length > 6) terminos += " + ...";
+                if (datos.length > Infinity ) terminos += " + ...";
 
                 // AQUÍ ESTÁ LA LÓGICA VISUAL:
                 // Si es población muestra N, si es muestra muestra n-1
@@ -208,7 +220,7 @@ generarPasoPaso: (tipo, datos, resultado, extra = null, esPoblacion = false) => 
             case 'desviacion':
                 return `$$ s = \\sqrt{${extra}} = ${resultado} $$`;
             case 'mediana':
-                const rawStr = datos.length > 10 ? datos.slice(0, 10).join(", ") + "..." : datos.join(", ");
+                const rawStr = datos.length > 1000 ? datos.slice(0, 10).join(", ") + "..." : datos.join(", ");
                 const ordenados = [...datos].sort((a, b) => a - b);
                 const mid = Math.floor(ordenados.length / 2);
                 let listaVisual = "";
@@ -218,7 +230,7 @@ generarPasoPaso: (tipo, datos, resultado, extra = null, esPoblacion = false) => 
                     listaVisual = ordenados.map((num, i) => (i === mid - 1 || i === mid) ? `\\mathbf{\\color{orange}{${num}}}` : num).join(", ");
                     listaVisual += ` \\rightarrow \\frac{${ordenados[mid - 1]} + ${ordenados[mid]}}{2}`;
                 }
-                return `$$ \\text{1. Desordenados: } [${rawStr}] $$ $$ \\text{2. Ordenados: } [${listaVisual}] = ${resultado} $$`;
+                return `$$ \\text{1. Desordenados: } ${rawStr} $$ $$ \\text{2. Ordenados: } ${listaVisual} = ${resultado} $$`;
             case 'moda':
                 const conteo = {};
                 datos.forEach(x => conteo[x] = (conteo[x] || 0) + 1);
@@ -226,7 +238,7 @@ generarPasoPaso: (tipo, datos, resultado, extra = null, esPoblacion = false) => 
                 for (let k in conteo) if (conteo[k] > maxFrec) maxFrec = conteo[k];
                 let textoConteo = Object.entries(conteo).map(([num, cant]) =>
                     (cant === maxFrec && cant > 1) ? `\\mathbf{\\color{orange}{${num}(${cant})}}` : `${num}(${cant})`).join(", ");
-                return `$$ \\text{Frecuencias: } [${textoConteo}] \\rightarrow \\text{Mayor} = ${resultado} $$`;
+                return `$$ \\text{Frecuencias: } [$textoConteo} \\rightarrow \\text{Mayor} = ${resultado} $$`;
             case 'cv':
                 // En 'extra' vienen la desviación y la media que enviamos desde main.js
                 const { desv, media } = extra;
