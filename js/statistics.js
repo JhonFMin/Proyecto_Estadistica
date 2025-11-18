@@ -196,9 +196,12 @@ case 'media':
                 // Mostramos los números 
                 const sumStr = datos.slice(0, Infinity).join(" + ");
                 const continuacion = datos.length > Infinity ? " + ..." : "";
-                // Muestra la suma dividida por el total
-                return `$$ \\frac{${sumStr}${continuacion}}{${n}} = ${resultado} $$`;
-
+                
+                // --- CAMBIO AQUÍ: Detectamos si es población o muestra ---
+                const simboloMedia = esPoblacion ? "\\mu" : "\\bar{x}";
+                
+                // Usamos la variable simboloMedia en la fórmula
+                return `$$ ${simboloMedia} = \\frac{${sumStr}${continuacion}}{${n}} = ${resultado} $$`;
             // --- CASO 2: RANGO (FALTABA ESTO) ---
             case 'rango':
                 const max = Math.max(...datos);
@@ -238,8 +241,7 @@ case 'media':
                 for (let k in conteo) if (conteo[k] > maxFrec) maxFrec = conteo[k];
                 let textoConteo = Object.entries(conteo).map(([num, cant]) =>
                     (cant === maxFrec && cant > 1) ? `\\mathbf{\\color{orange}{${num}(${cant})}}` : `${num}(${cant})`).join(", ");
-                return `$$ \\text{Frecuencias: } [$textoConteo} \\rightarrow \\text{Mayor} = ${resultado} $$`;
-            case 'cv':
+return `$$ \\text{Frecuencia: } ${textoConteo} \\rightarrow \\text{Mayor} = ${resultado} $$`;            case 'cv':
                 // En 'extra' vienen la desviación y la media que enviamos desde main.js
                 const { desv, media } = extra;
 
