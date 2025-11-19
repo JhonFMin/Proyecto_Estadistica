@@ -75,10 +75,10 @@ async function procesarDatos(modoAutomatico = false) {
     }
 
     let datosCrudos = [];
-    
+
     // 2. Analizamos el primer dato para decidir qué hacer
     const muestra = datosPre[0];
-    
+
     // ¿Empieza con número? (ej: "10" o "-5")
     const empiezaConNumero = /^-?\d/.test(muestra);
     // ¿Tiene espacios en medio?
@@ -143,7 +143,7 @@ async function procesarDatos(modoAutomatico = false) {
     let media, mediana, rango, varianza, desviacion;
     let mediaStr, medianaStr, modaStr, rangoStr, varianzaStr, desviacionStr;
     let tabla;
-    let datosParaGraficos = []; 
+    let datosParaGraficos = [];
     let datosParaAyuda = [];
 
     if (esCuantitativa) {
@@ -184,12 +184,12 @@ async function procesarDatos(modoAutomatico = false) {
     } else {
         // Lógica Cualitativa
         const datosTexto = datosCrudos;
-        datosParaGraficos = []; 
-        datosParaAyuda = datosTexto; 
+        datosParaGraficos = [];
+        datosParaAyuda = datosTexto;
 
-        tabla = Estadistica.tablaFrecuencias(datosTexto, false); 
+        tabla = Estadistica.tablaFrecuencias(datosTexto, false);
         const modaObj = Estadistica.moda(datosTexto, tipoDatoFinal);
-        
+
         const resultadoOrdinal = Estadistica.analisisOrdinal(datosTexto);
         const cardMedianaOrd = document.getElementById('card-mediana-ordinal');
 
@@ -202,16 +202,16 @@ async function procesarDatos(modoAutomatico = false) {
             cardMedianaOrd.classList.remove('hidden');
             document.getElementById('val-mediana-ordinal').innerText = resultadoOrdinal.mediana;
             medianaStr = resultadoOrdinal.mediana;
-            mediana = resultadoOrdinal.mediana; 
+            mediana = resultadoOrdinal.mediana;
         } else {
             badge.innerText = "Variable Cualitativa Nominal";
             badge.className = "bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide";
             cardMedianaOrd.classList.add('hidden');
             medianaStr = "--";
-            mediana = null; 
+            mediana = null;
         }
 
-        const topCat = tabla[0]; 
+        const topCat = tabla[0];
         const minCat = tabla[tabla.length - 1];
         document.getElementById('val-total-cats').innerText = tabla.length;
 
@@ -226,26 +226,26 @@ async function procesarDatos(modoAutomatico = false) {
         }
 
         mediaStr = rangoStr = varianzaStr = desviacionStr = "--";
-        modaStr = modaObj.valor; 
-        media = rango = varianza = desviacion = null; 
+        modaStr = modaObj.valor;
+        media = rango = varianza = desviacion = null;
 
         let textoInterpretacion = `Análisis de <strong>${datosTexto.length} datos cualitativos</strong>.<br>`;
         if (resultadoOrdinal) textoInterpretacion += `Se detectó un <strong>orden jerárquico</strong>.<br>`;
         if (topCat.fi !== minCat.fi) textoInterpretacion += `La categoría predominante es <strong>"${topCat.x}"</strong>.`;
         document.getElementById('analisis-texto').innerHTML = textoInterpretacion;
     }
-    
+
     badge.classList.remove('hidden');
 
     mostrarResultados(mediaStr, medianaStr, modaStr, rangoStr, varianzaStr, desviacionStr);
     generarTablaHTML(tabla);
-    generarGraficos(tabla, datosParaGraficos, tipoDatoFinal); 
+    generarGraficos(tabla, datosParaGraficos, tipoDatoFinal);
     actualizarBotonesAyuda(datosParaAyuda, media, rango, varianza, desviacion, mediana, modaStr);
 
     document.getElementById('welcome-screen').classList.add('hidden');
     document.getElementById('results-panel').classList.remove('hidden');
 
-    if(!modoAutomatico) {
+    if (!modoAutomatico) {
         Toast.fire({ icon: 'success', title: esCuantitativa ? 'Análisis Numérico Completo' : 'Análisis Cualitativo Completo' });
     }
 }
@@ -302,13 +302,14 @@ function generarTablaHTML(tabla) {
     let sumaFi = 0;
     let sumaHi = 0;
     let sumaPi = 0;
+    let ultimoHi = "0.0000"; // Para capturar el valor final de Hi
 
     // 1. Generar las filas normales y sumar
     tabla.forEach(fila => {
-        // Acumulamos valores (nos aseguramos que sean números)
         sumaFi += parseFloat(fila.fi);
         sumaHi += parseFloat(fila.hi);
         sumaPi += parseFloat(fila.pi);
+        ultimoHi = fila.Hi; // Capturamos el último Hi (debe ser 1.0000)
 
         const row = `
             <tr class="bg-white border-b hover:bg-gray-50 transition-colors dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 dark:text-slate-300">
@@ -316,25 +317,24 @@ function generarTablaHTML(tabla) {
                 <td class="px-6 py-4 text-blue-600 font-semibold dark:text-blue-400">${fila.fi}</td>
                 <td class="px-6 py-4 text-slate-500 dark:text-slate-400">${fila.Fi}</td>
                 <td class="px-6 py-4 text-slate-500 dark:text-slate-400">${fila.hi}</td>
-                <td class="px-6 py-4"><div class="flex items-center"><span class="mr-2 text-xs font-bold dark:text-slate-300">${fila.pi}%</span><div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-slate-600"><div class="bg-orange-500 h-1.5 rounded-full" style="width: ${fila.pi}%"></div></div></div></td>
+                <td class="px-6 py-4 text-slate-500 dark:text-slate-400">${fila.Hi}</td> <td class="px-6 py-4"><div class="flex items-center"><span class="mr-2 text-xs font-bold dark:text-slate-300">${fila.pi}%</span><div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-slate-600"><div class="bg-orange-500 h-1.5 rounded-full" style="width: ${fila.pi}%"></div></div></div></td>
             </tr>
         `;
         tbody.innerHTML += row;
     });
 
-    // 2. Ajuste de redondeo para que se vea bonito (hi ~ 1.00, pi ~ 100%)
-    // A veces la suma da 99.9 o 100.1 por decimales, así que redondeamos visualmente
-    const totalHiStr = sumaHi.toFixed(4);
+    // 2. Ajuste de redondeo para que se vea bonito (pi ~ 100%)
     const totalPiStr = Math.round(sumaPi) + "%";
 
-    // 3. Agregar la fila de TOTALES al final
+    // 3. Agregar fila de TOTALES al final (CORRECCIÓN APLICADA AQUÍ)
     const filaTotal = `
         <tr class="bg-orange-50 border-t-2 border-orange-300 font-bold text-slate-900 dark:bg-slate-900 dark:border-orange-700 dark:text-white">
             <td class="px-6 py-4 text-right uppercase text-xs tracking-wider text-orange-700 dark:text-orange-400">TOTAL</td>
-            <td class="px-6 py-4 text-orange-700 dark:text-orange-400">${sumaFi}</td>
-            <td class="px-6 py-4 text-slate-400 font-normal">--</td>
-            <td class="px-6 py-4 text-orange-700 dark:text-orange-400">${totalHiStr}</td>
-            <td class="px-6 py-4 text-orange-700 dark:text-orange-400">${totalPiStr}</td>
+       
+            <td class="px-6 py-4 text-slate-400 font-normal">--</td> 
+                 <td class="px-6 py-4 text-orange-700 dark:text-orange-400">${sumaFi}</td> 
+            <td class="px-6 py-4 text-slate-400 font-normal">--</td> <td class="px-6 py-4 text-orange-700 dark:text-orange-400">${ultimoHi}</td> 
+            <td class="px-6 py-4 text-orange-700 dark:text-orange-400">${totalPiStr}</td> 
         </tr>
     `;
 
@@ -571,7 +571,7 @@ function verAyudaFormato() {
 
 function verAtajos() {
     const kbdStyle = "bg-slate-100 px-2 py-1 rounded border border-slate-300 font-mono text-xs dark:bg-slate-700 dark:border-slate-600 dark:text-white font-bold shadow-sm";
-    
+
     Swal.fire({
         title: '<i class="fa-regular fa-keyboard text-indigo-500"></i> Atajos de Teclado',
         width: '600px',
@@ -643,22 +643,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('data-input');
 
     // 1. Atajo: Espacio -> Escribe ", "
-    input.addEventListener('keydown', function(e) {
+    input.addEventListener('keydown', function (e) {
         if (e.key === ' ') {
             e.preventDefault(); // Evita el espacio normal
-            
+
             // Inserta ", " donde esté el cursor
             const start = this.selectionStart;
             const end = this.selectionEnd;
             this.value = this.value.substring(0, start) + ", " + this.value.substring(end);
-            
+
             // Mueve el cursor después de la coma
             this.selectionStart = this.selectionEnd = start + 2;
         }
     });
 
     // 2. Atajo: Enter dentro del input -> Analizar (en vez de salto de línea)
-    input.addEventListener('keydown', function(e) {
+    input.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) { // Si presionas Enter sin Shift
             e.preventDefault();
             procesarDatos(); // Ejecuta el análisis
@@ -666,9 +666,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 3. Atajo Global: Ctrl + Enter -> Analizar desde cualquier lado
-   // --- GESTOR MAESTRO DE ATAJOS DE TECLADO ---
+    // --- GESTOR MAESTRO DE ATAJOS DE TECLADO ---
     document.addEventListener('keydown', (e) => {
-        
+
         // 1. Analizar Global (Ctrl + Enter)
         if (e.ctrlKey && e.key === 'Enter') {
             e.preventDefault(); // Evita que se inserte salto de línea si estás en textarea
@@ -682,7 +682,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- ATAJOS CON ALT (Funcionan siempre) ---
         if (e.altKey) {
-            switch(e.key.toLowerCase()) {
+            switch (e.key.toLowerCase()) {
                 case 'd': // Alt + D: Demo
                     e.preventDefault();
                     cargarDemo();
@@ -752,7 +752,7 @@ async function exportarPDF(e) {
                     if (chart.options.scales[axis].ticks) {
                         chart.options.scales[axis].ticks.color = colorText;
                         // Forzamos opacidad completa
-                        chart.options.scales[axis].ticks.textStrokeColor = 'transparent'; 
+                        chart.options.scales[axis].ticks.textStrokeColor = 'transparent';
                     }
                     // Grid (La rejilla) - La hacemos más oscura para que se vea en papel
                     if (chart.options.scales[axis].grid) {
@@ -1006,7 +1006,7 @@ function verFormula(tipo) {
             color = "#3b82f6";
             // La fórmula visual cambia ligeramente la notación (µ vs x̄)
             formulaGenerica = esPoblacion ? "$$\\mu = \\frac{\\sum x_i}{N}$$" : "$$\\bar{x} = \\frac{\\sum x_i}{n}$$";
-calculoReal = Estadistica.generarPasoPaso('media', d.datos, d.media.toFixed(2), null, esPoblacion);            explicacion = "Suma de todos los datos dividida entre la cantidad total.";
+            calculoReal = Estadistica.generarPasoPaso('media', d.datos, d.media.toFixed(2), null, esPoblacion); explicacion = "Suma de todos los datos dividida entre la cantidad total.";
             break;
 
         case 'mediana':
@@ -1184,7 +1184,7 @@ async function exportarPDF(e) {
         // C. Aplicar cambios
         // Primero actualizamos al tema claro estándar
         if (typeof actualizarColoresGraficos === 'function') actualizarColoresGraficos();
-        
+
         // Luego sobrescribimos con NEGRO PURO para impresión
         chartsActivos.forEach(forcePrintColors);
 
@@ -1199,7 +1199,7 @@ async function exportarPDF(e) {
         const margin = 15;
         let currentY = 15;
 
-        const colorPrimary = [234, 88, 12]; 
+        const colorPrimary = [234, 88, 12];
         const colorSecondary = [30, 41, 59];
         const colorTableHead = [234, 88, 12];
 
@@ -1210,7 +1210,7 @@ async function exportarPDF(e) {
 
         // Logo
         const logoImgTag = document.querySelector('aside img');
-        if(logoImgTag) {
+        if (logoImgTag) {
             try {
                 const c = document.createElement('canvas');
                 c.width = logoImgTag.naturalWidth;
@@ -1219,7 +1219,7 @@ async function exportarPDF(e) {
                 ctx.drawImage(logoImgTag, 0, 0);
                 const logoData = c.toDataURL('image/png');
                 doc.addImage(logoData, 'PNG', margin, currentY, 18, 18);
-            } catch(e){}
+            } catch (e) { }
         }
 
         const textX = margin + 22;
@@ -1227,7 +1227,7 @@ async function exportarPDF(e) {
         doc.setFontSize(18);
         doc.setTextColor(...colorSecondary);
         doc.text("Informe de Análisis Estadístico", textX, currentY + 6);
-        
+
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(100);
@@ -1244,7 +1244,7 @@ async function exportarPDF(e) {
         const esPoblacion = tipoCalculo === 'poblacion';
         doc.setFillColor(248, 250, 252);
         doc.roundedRect(margin, currentY, pageWidth - (margin * 2), 35, 3, 3, 'F');
-        
+
         doc.setFontSize(11);
         doc.setTextColor(...colorPrimary);
         doc.text("Análisis de Datos y Conclusiones", margin + 5, currentY + 8);
@@ -1254,7 +1254,7 @@ async function exportarPDF(e) {
         const analisisTexto = document.getElementById('analisis-texto').innerText;
         const splitTexto = doc.splitTextToSize(analisisTexto, pageWidth - (margin * 2) - 10);
         doc.text(splitTexto, margin + 5, currentY + 16);
-        
+
         const formulaTexto = esPoblacion ? "Metodología: Cálculo Poblacional (N)" : "Metodología: Cálculo Muestral (n-1)";
         doc.setFont("courier", "normal");
         doc.setFontSize(8);
@@ -1269,7 +1269,7 @@ async function exportarPDF(e) {
         const valRango = document.getElementById('val-rango').innerText;
         const valVarianza = document.getElementById('val-varianza').innerText;
         const valDesviacion = document.getElementById('val-desviacion').innerText;
-      let valCV = "--"; // Valor por defecto si falla
+        let valCV = "--"; // Valor por defecto si falla
         try {
             // Limpiamos cualquier texto extra y convertimos a número
             const m = parseFloat(valMedia);
@@ -1325,13 +1325,13 @@ async function exportarPDF(e) {
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(...colorSecondary);
                 doc.text(titulo, margin, currentY);
-                
+
                 const scale = 2;
                 const tempCanvas = document.createElement("canvas");
                 tempCanvas.width = canvas.width * scale;
                 tempCanvas.height = canvas.height * scale;
                 const ctx = tempCanvas.getContext("2d");
-                
+
                 ctx.fillStyle = "#ffffff";
                 ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
                 ctx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
@@ -1347,12 +1347,12 @@ async function exportarPDF(e) {
             }
         };
 
-        if(chartHistograma) agregarGrafico('mainChart', '1. Distribución de Frecuencias');
+        if (chartHistograma) agregarGrafico('mainChart', '1. Distribución de Frecuencias');
         const boxCanvas = document.getElementById('boxPlotChart');
-        if(chartBoxPlot && boxCanvas && !boxCanvas.parentNode.classList.contains('hidden')) {
+        if (chartBoxPlot && boxCanvas && !boxCanvas.parentNode.classList.contains('hidden')) {
             agregarGrafico('boxPlotChart', '2. Análisis de Dispersión');
         }
-        if(chartPastel) agregarGrafico('pieChart', '3. Composición Porcentual');
+        if (chartPastel) agregarGrafico('pieChart', '3. Composición Porcentual');
 
         // Créditos
         if (currentY + 40 > 280) { doc.addPage(); currentY = 20; } else { currentY += 10; }
@@ -1382,7 +1382,7 @@ async function exportarPDF(e) {
         }
 
         doc.save('Informe_Estadistico_Uniguajira.pdf');
-        
+
         Swal.close(); // Cerrar loading
         Toast.fire({ icon: 'success', title: '¡Informe descargado con éxito!' });
 
@@ -1735,17 +1735,17 @@ function togglePerformance() {
     const html = document.documentElement;
     const btn = document.getElementById('btn-perf');
     const isLowPerf = html.classList.toggle('low-perf');
-    
+
     // Guardar preferencia
     localStorage.setItem('low-performance', isLowPerf);
 
     // Actualizar visual del botón
     if (isLowPerf) {
         btn.classList.add('btn-perf-active');
-        Toast.fire({icon: 'info', title: 'Modo Bajo Rendimiento: ACTIVADO'});
+        Toast.fire({ icon: 'info', title: 'Modo Bajo Rendimiento: ACTIVADO' });
     } else {
         btn.classList.remove('btn-perf-active');
-        Toast.fire({icon: 'success', title: 'Modo Gráfico: ACTIVADO'});
+        Toast.fire({ icon: 'success', title: 'Modo Gráfico: ACTIVADO' });
     }
 
     // PAUSAR/REANUDAR VIDEOS (Ahorro real de CPU/GPU)
@@ -1758,7 +1758,7 @@ function togglePerformance() {
             const isDark = html.classList.contains('dark');
             // Lógica simple: intentar reproducir todos, el CSS los oculta visualmente
             // pero pausarlos evita que la CPU trabaje en segundo plano.
-            v.play().catch(e => {}); 
+            v.play().catch(e => { });
         }
     });
 }
@@ -1771,7 +1771,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('low-performance') === 'true') {
         document.documentElement.classList.add('low-perf');
         document.getElementById('btn-perf')?.classList.add('btn-perf-active');
-        
+
         // Pausar videos inmediatamente
         setTimeout(() => {
             document.querySelectorAll('video').forEach(v => v.pause());
@@ -1821,7 +1821,7 @@ if (dropZone) {
         if (files.length > 0) {
             // Asignamos los archivos al input invisible para que tu función 'procesarArchivoUnificado' funcione
             fileInput.files = files;
-            
+
             // Llamamos manualmente a tu función de procesamiento
             procesarArchivoUnificado(fileInput);
         }
