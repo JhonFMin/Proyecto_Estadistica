@@ -718,244 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-async function exportarPDF(e) {
-    // 1. PREVENIR RECARGA
-    if (e && e.preventDefault) e.preventDefault();
 
-    // 2. Validación
-    if (document.getElementById('results-panel').classList.contains('hidden')) {
-        Toast.fire({ icon: 'warning', title: 'Primero analiza algunos datos.' });
-        return;
-    }
-
-    Toast.fire({ icon: 'info', title: 'Generando PDF...' });
-
-    // Guardamos estado original
-    const isDark = document.documentElement.classList.contains('dark');
-    const originalTextColor = isDark ? '#cbd5e1' : '#334155';
-    const originalGridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-    const chartsActivos = [chartHistograma, chartBoxPlot, chartPastel];
-
-    // --- FUNCIÓN DE CAMBIO DE COLOR AGRESIVA ---
-    const setChartColor = (chart, colorText, colorGrid) => {
-        if (!chart) return;
-
-        // 1. Color Global (Importante para leyendas generales)
-        chart.options.color = colorText;
-        chart.options.borderColor = colorGrid;
-
-        // 2. Ejes X e Y
-        if (chart.options.scales) {
-            ['x', 'y'].forEach(axis => {
-                if (chart.options.scales[axis]) {
-                    // Ticks (Los números)
-                    if (chart.options.scales[axis].ticks) {
-                        chart.options.scales[axis].ticks.color = colorText;
-                        // Forzamos opacidad completa
-                        chart.options.scales[axis].ticks.textStrokeColor = 'transparent';
-                    }
-                    // Grid (La rejilla) - La hacemos más oscura para que se vea en papel
-                    if (chart.options.scales[axis].grid) {
-                        chart.options.scales[axis].grid.color = colorGrid;
-                        chart.options.scales[axis].grid.borderColor = colorText; // La línea del borde
-                    }
-                    // Títulos (Texto "Distribución")
-                    if (chart.options.scales[axis].title) {
-                        chart.options.scales[axis].title.color = colorText;
-                    }
-                }
-            });
-        }
-
-        // 3. Leyenda
-        if (chart.options.plugins && chart.options.plugins.legend) {
-            chart.options.plugins.legend.labels.color = colorText;
-        }
-
-        chart.update(); // Actualización completa (sin 'none')
-    };
-
-    try {
-        // === PASO 1: CAMBIAR A MODO IMPRESIÓN (NEGRO Y GRIS OSCURO) ===
-        // Usamos un gris fuerte para la rejilla (0.5) para que se note en el PDF
-        chartsActivos.forEach(c => setChartColor(c, '#ffffffff', 'rgba(44, 43, 43, 0.5)'));
-
-        // === PASO 2: LA ESPERA MÁGICA (ESTO ARREGLA EL PROBLEMA) ===
-        // Esperamos 500ms para asegurar que el navegador repinte los gráficos en negro
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // === PASO 3: CREAR EL PDF ===
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const margin = 15;
-        let currentY = 15;
-        const colorPrimary = [234, 88, 12];
-        const colorSecondary = [30, 41, 59];
-        const colorTableHead = [234, 88, 12];
-
-        // Encabezado
-        doc.setFillColor(...colorPrimary);
-        doc.rect(0, 0, pageWidth, 5, 'F');
-        currentY += 10;
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-        doc.setTextColor(...colorSecondary);
-        doc.text("Informe de Análisis Estadístico", margin, currentY);
-
-        currentY += 7;
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(100);
-        doc.text("Universidad de La Guajira | Facultad de Ingeniería", margin, currentY);
-        doc.text(`Fecha: ${new Date().toLocaleString()}`, pageWidth - margin, currentY, { align: 'right' });
-
-        currentY += 10;
-        doc.setDrawColor(200);
-        doc.line(margin, currentY, pageWidth - margin, currentY);
-        currentY += 10;
-
-        // Metodología
-        const tipoCalculo = document.querySelector('input[name="tipo-calculo"]:checked').value;
-        const esPoblacion = tipoCalculo === 'poblacion';
-        doc.setFillColor(248, 250, 252);
-        doc.roundedRect(margin, currentY, pageWidth - (margin * 2), 35, 3, 3, 'F');
-        doc.setFontSize(11);
-        doc.setTextColor(...colorPrimary);
-        doc.text("Resumen Ejecutivo", margin + 5, currentY + 8);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.setTextColor(60);
-        const analisisTexto = document.getElementById('analisis-texto').innerText;
-        const splitTexto = doc.splitTextToSize(analisisTexto, pageWidth - (margin * 2) - 10);
-        doc.text(splitTexto, margin + 5, currentY + 16);
-        const formulaTexto = esPoblacion ? "Nota: Cálculo Poblacional (N)" : "Nota: Cálculo Muestral (n-1)";
-        doc.setFont("courier", "normal");
-        doc.setFontSize(8);
-        doc.setTextColor(150);
-        doc.text(formulaTexto, margin + 5, currentY + 31);
-
-        currentY += 45;
-
-        // Tabla de Datos
-        const valMedia = document.getElementById('val-media').innerText;
-        const valMediana = document.getElementById('val-mediana').innerText;
-        const valModa = document.getElementById('val-moda').innerText;
-        const valRango = document.getElementById('val-rango').innerText;
-        const valVarianza = document.getElementById('val-varianza').innerText;
-        const valDesviacion = document.getElementById('val-desviacion').innerText;
-        let valCV = "--";
-        try {
-            const m = parseFloat(valMedia);
-            const s = parseFloat(valDesviacion);
-            if (m !== 0) valCV = ((s / m) * 100).toFixed(2) + "%";
-        } catch (e) { }
-
-        doc.autoTable({
-            startY: currentY,
-            head: [['Medida', 'Valor', 'Medida', 'Valor']],
-            body: [
-                ['Media', valMedia, 'Rango', valRango],
-                ['Mediana', valMediana, 'Varianza', valVarianza],
-                ['Moda', valModa, 'Desviación Estándar', valDesviacion],
-                ['', '', 'Coef. Variación', valCV]
-            ],
-            theme: 'grid',
-            headStyles: { fillColor: colorTableHead, textColor: 255, fontStyle: 'bold', halign: 'center' },
-            styles: { fontSize: 10, cellPadding: 3 },
-            columnStyles: {
-                0: { fontStyle: 'bold', textColor: colorSecondary },
-                1: { halign: 'center' },
-                2: { fontStyle: 'bold', textColor: colorSecondary },
-                3: { halign: 'center' }
-            }
-        });
-
-        currentY = doc.lastAutoTable.finalY + 15;
-
-        // Tabla Frecuencias
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(...colorSecondary);
-        doc.text("Tabla de Frecuencias", margin, currentY);
-        currentY += 3;
-
-        doc.autoTable({
-            html: '#frequency-table-body',
-            startY: currentY,
-            head: [['Dato', 'fi', 'Fi', 'hi', '%']],
-            theme: 'grid',
-            headStyles: { fillColor: colorTableHead, textColor: 255, halign: 'center' },
-            styles: { fontSize: 9, halign: 'center', cellPadding: 2 },
-            alternateRowStyles: { fillColor: [249, 250, 251] }
-        });
-
-        currentY = doc.lastAutoTable.finalY + 15;
-
-        // === PASO 4: CAPTURA DE GRÁFICOS (CON FONDO BLANCO FORZADO) ===
-        const agregarGrafico = (canvasId, titulo) => {
-            const canvas = document.getElementById(canvasId);
-            if (canvas && canvas.width > 0) {
-                if (currentY + 100 > 280) {
-                    doc.addPage();
-                    currentY = 20;
-                }
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(...colorSecondary);
-                doc.text(titulo, margin, currentY);
-
-                // Escala 2x (Retina) para calidad y eficiencia
-                const scale = 2;
-                const tempCanvas = document.createElement("canvas");
-                tempCanvas.width = canvas.width * scale;
-                tempCanvas.height = canvas.height * scale;
-                const ctx = tempCanvas.getContext("2d");
-
-                // FONDO BLANCO SÓLIDO (Vital para que las letras negras se vean)
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-                ctx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
-
-                const imgData = tempCanvas.toDataURL("image/jpeg", 0.95);
-                const imgProps = doc.getImageProperties(imgData);
-                const pdfWidth = pageWidth - (margin * 2);
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-                doc.addImage(imgData, 'JPEG', margin, currentY + 5, pdfWidth, pdfHeight);
-                tempCanvas.remove();
-                currentY += pdfHeight + 20;
-            }
-        };
-
-        if (chartHistograma) agregarGrafico('mainChart', 'Distribución de Frecuencias');
-        if (chartBoxPlot && document.getElementById('boxPlotChart').parentNode.style.display !== 'none') {
-            agregarGrafico('boxPlotChart', 'Análisis de Dispersión');
-        }
-        if (chartPastel) agregarGrafico('pieChart', 'Composición Porcentual');
-
-        // Pie de página
-        const pageCount = doc.internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.setTextColor(150);
-            doc.text(`Página ${i} de ${pageCount} - Reporte Generado Automáticamente`, pageWidth / 2, 290, { align: 'center' });
-        }
-
-        doc.save('Informe_Estadistico_Uniguajira.pdf');
-        Toast.fire({ icon: 'success', title: '¡Informe descargado con éxito!' });
-
-    } catch (error) {
-        console.error(error);
-        Toast.fire({ icon: 'error', title: 'Error al generar PDF.' });
-    } finally {
-        // === PASO 5: RESTAURAR COLORES (CON OTRA ESPERA) ===
-        // Volvemos a poner los colores bonitos de la web
-        chartsActivos.forEach(c => setChartColor(c, originalTextColor, originalGridColor));
-    }
-}
 function actualizarBotonesAyuda(datos, media, rango, varianza, desviacion, mediana, moda) {
     // Esta función guarda los datos (numéricos o de texto) para los popups de "Paso a paso"
     datosActualesGlobal = {
@@ -1301,10 +1064,22 @@ async function exportarPDF(e) {
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(...colorSecondary);
-        doc.text("Tabla de Frecuencias", margin, currentY);
+       doc.text("Tabla de Frecuencias", margin, currentY);
         currentY += 3;
+
+        // --- CORRECCIÓN: Extraemos los datos manualmente para forzar el encabezado ---
+        const bodyData = [];
+        const filas = document.querySelectorAll('#frequency-table-body tr');
+        filas.forEach(tr => {
+            const fila = [];
+            tr.querySelectorAll('td').forEach(td => fila.push(td.innerText));
+            bodyData.push(fila);
+        });
+
         doc.autoTable({
-            html: '#frequency-table-body',
+            // YA NO USAMOS 'html', USAMOS 'body'
+            head: [['Dato', 'fi', 'FI', 'hi', 'HI', '%']], 
+            body: bodyData,
             startY: currentY,
             theme: 'grid',
             headStyles: { fillColor: colorTableHead, textColor: 255, halign: 'center' },
