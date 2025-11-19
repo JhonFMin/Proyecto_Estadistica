@@ -38,6 +38,7 @@ const Estadistica = {
     desviacion: (varianza) => Math.sqrt(varianza),
 
     // --- FUNCIÓN DE MODA (La que sí funciona) ---
+   // --- FUNCIÓN DE MODA (CORREGIDA PARA MULTIMODALIDAD) ---
     moda: (datos, tipoDato = 'cuantitativo') => {
         const frecuencia = {};
         datos.forEach(val => frecuencia[val] = (frecuencia[val] || 0) + 1);
@@ -55,10 +56,12 @@ const Estadistica = {
 
         const maxFrec = frecArray[0].frecuencia;
 
+        // CASO 1: Amodal real (ningún valor se repite)
         if (maxFrec === 1 && frecArray.length === datos.length) {
             return { tipo: 'amodal', valor: 'Amodal', modas: [], frecuencia: 1 };
         }
 
+        // 2. Filtrar todos los valores con la frecuencia máxima
         const modas = frecArray
             .filter(item => item.frecuencia === maxFrec)
             .map(item => tipoDato === 'cuantitativo' ? Number(item.valor) : item.valor);
@@ -67,18 +70,20 @@ const Estadistica = {
             modas.sort((a, b) => a - b);
         }
 
-        if (modas.length === frecArray.length) {
-            return { tipo: 'amodal', valor: 'Amodal', modas: [], frecuencia: maxFrec };
-        }
-
+        // *** BLOQUE ELIMINADO: Ya no decimos Amodal si todas las frecuencias son > 1 ***
+        
+        // CASO 2: Unimodal
         if (modas.length === 1) {
             return { tipo: 'unimodal', valor: String(modas[0]), modas: modas, frecuencia: maxFrec };
         }
 
+        // CASO 3: Multimodal (Si hay más de una moda)
         if (modas.length > 3) {
+            // Si hay demasiadas modas, reportar solo Multimodal
             return { tipo: 'multimodal', valor: 'Multimodal', modas: modas, frecuencia: maxFrec };
         }
 
+        // Multimodal detallado (Si son 2 o 3 modas)
         return { tipo: 'multimodal', valor: modas.join(', '), modas: modas, frecuencia: maxFrec };
     },
 
@@ -150,33 +155,56 @@ const Estadistica = {
     },
 
     // --- OTRAS FUNCIONES ---
-    tablaFrecuencias: (datos, esCuantitativa) => {
-        const n = datos.length;
-        const map = {};
-        datos.forEach(x => map[x] = (map[x] || 0) + 1);
+   tablaFrecuencias: (datos, esCuantitativa) => {
+    const n = datos.length;
+    const map = {};
+    
+    datos.forEach(x => map[x] = (map[x] || 0) + 1);
 
-        let unicos = Object.keys(map);
-        if (esCuantitativa) {
-            unicos = unicos.map(Number).sort((a, b) => a - b);
-        } else {
-            unicos = unicos.sort((a, b) => map[b] - map[a]);
+    let unicos = Object.keys(map);
+    
+    if (esCuantitativa) {
+        unicos = unicos.map(Number).sort((a, b) => a - b);
+    } else {
+        // Ordena por frecuencia descendente si es cualitativa
+        unicos = unicos.sort((a, b) => map[b] - map[a]);
+    }
+
+    let Fi = 0; // Acumulador de Frecuencia Absoluta
+    let tabla = [];
+
+    unicos.forEach((x, index) => {
+        let fi = map[x];
+        Fi += fi;
+
+        // 1. hi (Individual): Se calcula del valor crudo y se redondea solo para mostrar
+        let hiRaw = fi / n;
+        let hiDisplay = hiRaw.toFixed(4); 
+
+        // 2. Hi (Acumulada): Se calcula directo Fi / n para garantizar 1.0000 en el final
+        let HiRaw = Fi / n;
+        let HiDisplay = HiRaw.toFixed(4);
+
+        // 3. Porcentaje
+        let piDisplay = (hiRaw * 100).toFixed(2);
+
+        // Forzamos visualmente el cierre perfecto en la última fila
+        if (index === unicos.length - 1) {
+            HiDisplay = "1.0000";
         }
 
-        let Fi = 0;
-        let tabla = [];
-        unicos.forEach(x => {
-            let fi = map[x];
-            Fi += fi;
-            let hi = (fi / n).toFixed(4);
-
-            // CAMBIO AQUÍ: De toFixed(1) a toFixed(2)
-            // Esto permite ver 0.64% en lugar de 0.6%
-            let pi = (hi * 100).toFixed(2);
-
-            tabla.push({ x, fi, Fi, hi, pi });
+        tabla.push({ 
+            x, 
+            fi, 
+            Fi, 
+            hi: hiDisplay, 
+            Hi: HiDisplay, 
+            pi: piDisplay 
         });
-        return tabla;
-    },
+    });
+    
+    return tabla;
+},
 generarPasoPaso: (tipo, datos, resultado, extra = null, esPoblacion = false) => {
         
         // CORRECCIÓN AQUÍ:
